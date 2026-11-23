@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="./style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pen</title>
+  </head>
+  <body>
+
+    <script src="./scri
+      <!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>터보 레이싱 v5.2 - 자동차 디테일 강화</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at top, #1e293b 0%, #090d16 70%);
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 10px;
+    }
+    .header {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 14px;
+      font-size: 13.5px;
+      font-weight: 700;
+      background: rgba(30, 41, 59, 0.92);
+      border-radius: 14px;
+      margin-bottom: 8px;
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    }
+    .score-box span { color: #38bdf8; }
+    .coin-box span { color: #facc15; }
+    .lv-box span { color: #fb7185; }
+
+    #game-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      height: 550px;
+      background: #181e29;
+      border-radius: 20px;
+      overflow: hidden;
+      border: 2px solid rgba(148, 163, 184, 0.25);
+      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.65);
+    }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    .status-bars {
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      align-items: center;
+      z-index: 5;
+      pointer-events: none;
+    }
+    .bar-wrap {
+      width: 176px;
+      height: 9px;
+      background: rgba(15, 23, 42, 0.88);
+      border-radius: 999px;
+      overflow: hidden;
+      display: none;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    #shield-bar-wrap { border: 1px solid #38bdf8; }
+    #shield-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #38bdf8, #818cf8); }
+    #slow-bar-wrap { border: 1px solid #34d399; }
+    #slow-bar { width: 100%; height: 100%; background: linear-gradient(90deg, #10b981, #34d399); }
+
+    .screen-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(9, 13, 22, 0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 16px;
+      z-index: 50;
+      pointer-events: auto;
+      overflow-y: auto;
+    }
+    #garage-overlay {
+      justify-content: flex-start;
+      z-index: 60;
+    }
+    .screen-overlay h1 {
+      font-size: 23px;
+      letter-spacing: -0.4px;
+      margin-bottom: 5px;
+      background: linear-gradient(90deg, #f8fafc, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .screen-overlay p { font-size: 12px; color: #cbd5e1; margin-bottom: 8px; line-height: 1.45; }
+
+    .coin-legend {
+      display: flex;
+      gap: 10px;
+      font-size: 11.5px;
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      padding: 6px 13px;
+      border-radius: 999px;
+      margin-bottom: 8px;
+    }
+    .coin-legend .gold { color: #facc15; font-weight: 700; }
+    .coin-legend .red { color: #f87171; font-weight: 700; }
+
+    .equipped-badge {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: #7dd3fc;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 6px 13px;
+      border-radius: 999px;
+      margin-bottom: 10px;
+      max-width: 350px;
+    }
+
+    .rank-box {
+      width: 100%;
+      max-width: 340px;
+      background: rgba(30, 41, 59, 0.85);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 14px;
+      padding: 9px 13px;
+      margin-bottom: 12px;
+      text-align: left;
+    }
+    .rank-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .rank-list { list-style: none; font-size: 12.5px; }
+    .rank-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 2px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.12);
+    }
+    .rank-item:last-child { border-bottom: none; }
+    .rank-item.highlight { color: #38bdf8; font-weight: 700; }
+
+    .name-form {
+      display: flex;
+      gap: 6px;
+      width: 100%;
+      max-width: 340px;
+      margin-bottom: 10px;
+    }
+    #player-name {
+      flex: 1;
+      padding: 9px 11px;
+      border-radius: 10px;
+      border: 1px solid #475569;
+      background: #0f172a;
+      color: #fff;
+      font-size: 13.5px;
+    }
+    #save-rank-btn {
+      padding: 9px 13px;
+      border-radius: 10px;
+      border: none;
+      background: #10b981;
+      color: #fff;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      width: 100%;
+      max-width: 340px;
+      margin-top: 6px;
+      position: relative;
+      z-index: 70;
+    }
+    .btn-primary {
+      flex: 1.3;
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      border: none;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 700;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(59, 130, 246, 0.45);
+    }
+    .btn-garage {
+      flex: 1;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #0f172a;
+      border: none;
+      padding: 14px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.3);
+    }
+
+    .garage-list {
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .car-card {
+      background: rgba(30, 41, 59, 0.92);
+      border: 1.5px solid rgba(148, 163, 184, 0.2);
+      border-radius: 14px;
+      padding: 8px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-align: left;
+      gap: 9px;
+    }
+    .car-card.equipped {
+      border-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.14);
+    }
+    .car-preview-canvas {
+      width: 48px;
+      height: 64px;
+      border-radius: 10px;
+      background: #0f172a;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      flex-shrink: 0;
+    }
+    .car-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .car-info h3 {
+      font-size: 13px;
+      margin-bottom: 3px;
+      color: #f8fafc;
+    }
+    .car-info p {
+      font-size: 10.5px;
+      color: #94a3b8;
+      margin: 0;
+      line-height: 1.3;
+    }
+    .car-action-btn {
+      padding: 7px 10px;
+      border-radius: 9px;
+      border: none;
+      font-size: 11.5px;
+      font-weight: 700;
+      min-width: 76px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .btn-buy { background: #facc15; color: #0f172a; }
+    .btn-buy:disabled { background: #334155; color: #64748b; }
+    .btn-equip { background: #3b82f6; color: #fff; }
+    .btn-equipped { background: #10b981; color: #fff; }
+
+    .ad-slot {
+      width: 100%;
+      max-width: 400px;
+      height: 50px;
+      margin-top: 8px;
+      background: rgba(30, 41, 59, 0.65);
+      border: 1px dashed #475569;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="score-box">점수: <span id="score">0</span></div>
+    <div class="coin-box">🪙 <span id="wallet-coins">0</span>원</div>
+    <div class="lv-box">속도: <span id="level">Lv.1</span></div>
+  </div>
+
+  <div id="game-wrap">
+    <canvas id="gameCanvas" width="400" height="550"></canvas>
+
+    <div class="status-bars">
+      <div id="shield-bar-wrap" class="bar-wrap"><div id="shield-bar"></div></div>
+      <div id="slow-bar-wrap" class="bar-wrap"><div id="slow-bar"></div></div>
+    </div>
+
+    <div id="overlay" class="screen-overlay">
+      <h1 id="title-text">🏎️ 터보 레이싱 v5.2</h1>
+      <p id="desc-text">실드로 적 차를 튕기면 +1원! 코인을 모아 고급 차량에 도전하세요.</p>
+
+      <div class="coin-legend">
+        <span class="gold">🟡 노란코인 +5원</span>
+        <span class="red">🔴 빨간코인 +10원 (1/10)</span>
+      </div>
+
+      <div class="equipped-badge" id="equipped-badge">장착 중: 기본 레이서</div>
+
+      <div class="name-form" id="name-form" style="display: none;">
+        <input type="text" id="player-name" maxlength="10" placeholder="닉네임 입력" />
+        <button id="save-rank-btn" type="button">등록</button>
+      </div>
+
+      <div class="rank-box">
+        <div class="rank-title">🏆 TOP 5 랭킹</div>
+        <ul class="rank-list" id="rank-list"></ul>
+      </div>
+
+      <div class="btn-row">
+        <button id="open-garage-btn" class="btn-garage" type="button">🚘 차고 (8종)</button>
+        <button id="start-btn" class="btn-primary" type="button">게임 시작</button>
+      </div>
+    </div>
+
+    <div id="garage-overlay" class="screen-overlay" style="display: none;">
+      <h1>🚘 차고 & 차량 8종</h1>
+      <p>보유 코인: <b style="color:#facc15;" id="garage-coin-text">0원</b> · 구매 전 모습 미리보기 가능</p>
+      <div class="garage-list" id="garage-list"></div>
+      <button id="close-garage-btn" class="btn-primary" style="width: 100%; max-width: 360px;" type="button">돌아가기</button>
+    </div>
+  </div>
+
+  <div class="ad-slot">📢 광고 배너 영역 (320x50)</div>
+
+  <script>
+    (function () {
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas ? canvas.getContext("2d") : null;
+      const overlay = document.getElementById("overlay");
+      const garageOverlay = document.getElementById("garage-overlay");
+      const startBtn = document.getElementById("start-btn");
+      const openGarageBtn = document.getElementById("open-garage-btn");
+      const closeGarageBtn = document.getElementById("close-garage-btn");
+      const garageListEl = document.getElementById("garage-list");
+      const garageCoinText = document.getElementById("garage-coin-text");
+      const equippedBadge = document.getElementById("equipped-badge");
+
+      const titleText = document.getElementById("title-text");
+      const descText = document.getElementById("desc-text");
+      const scoreEl = document.getElementById("score");
+      const walletCoinsEl = document.getElementById("wallet-coins");
+      const levelEl = document.getElementById("level");
+      const rankListEl = document.getElementById("rank-list");
+      const nameForm = document.getElementById("name-form");
+      const playerNameInput = document.getElementById("player-name");
+      const saveRankBtn = document.getElementById("save-rank-btn");
+
+      const shieldBarWrap = document.getElementById("shield-bar-wrap");
+      const shieldBar = document.getElementById("shield-bar");
+      const slowBarWrap = document.getElementById("slow-bar-wrap");
+      const slowBar = document.getElementById("slow-bar");
+
+      const CARS = [
+        { id: "basic", name: "기본 레이서", price: 0, color: "#38bdf8", darkColor: "#0284c7", accent: "#fef08a", stripe: "#e0f2fe", desc: "균형 잡힌 기본 차 · 실드 3.5초", steerSpeed: 0.24, coinMult: 1, scoreMult: 1, shieldMs: 3500, magnetRadius: 0, hitboxMargin: 6, slowChance: 0 },
+        { id: "taxi", name: "골드 코인 택시", price: 120, color: "#facc15", darkColor: "#ca8a04", accent: "#ffffff", stripe: "#0f172a", desc: "코인 획득 2배(노란10원/빨간20원)", steerSpeed: 0.25, coinMult: 2, scoreMult: 1, shieldMs: 3500, magnetRadius: 0, hitboxMargin: 6, slowChance: 0 },
+        { id: "police", name: "경찰 인터셉터", price: 260, color: "#3b82f6", darkColor: "#1d4ed8", accent: "#ef4444", stripe: "#f8fafc", desc: "핸들링 +35% · 실드 4.8초 · 점수 +10%", steerSpeed: 0.33, coinMult: 1, scoreMult: 1.1, shieldMs: 4800, magnetRadius: 0, hitboxMargin: 6, slowChance: 0 },
+        { id: "chrono", name: "크로노 슬로우카", price: 420, color: "#10b981", darkColor: "#047857", accent: "#a7f3d0", stripe: "#d1fae5", desc: "코인 먹을 때 35% 확률로 2.2초 시간 둔화", steerSpeed: 0.30, coinMult: 1.2, scoreMult: 1.15, shieldMs: 3800, magnetRadius: 0, hitboxMargin: 6, slowChance: 0.35 },
+        { id: "drift", name: "스텔스 드리프터", price: 620, color: "#a855f7", darkColor: "#6b21a8", accent: "#e9d5ff", stripe: "#f3e8ff", desc: "초민첩 핸들링 · 충돌 판정 유리(+3px)", steerSpeed: 0.38, coinMult: 1.2, scoreMult: 1.15, shieldMs: 3500, magnetRadius: 0, hitboxMargin: 9, slowChance: 0 },
+        { id: "super", name: "하이퍼 슈퍼카", price: 880, color: "#f43f5e", darkColor: "#be123c", accent: "#fde047", stripe: "#ffe4e6", desc: "코인 자석 · 점수 +30% · 실드 4초", steerSpeed: 0.32, coinMult: 1, scoreMult: 1.3, shieldMs: 4000, magnetRadius: 125, hitboxMargin: 6, slowChance: 0 },
+        { id: "mforce", name: "블랙 M-포스", price: 1300, color: "#334155", darkColor: "#0f172a", accent: "#38bdf8", stripe: "#e2e8f0", desc: "자석 + 코인 1.5배 + 점수 +40% + 둔화15%", steerSpeed: 0.36, coinMult: 1.5, scoreMult: 1.4, shieldMs: 4200, magnetRadius: 135, hitboxMargin: 8, slowChance: 0.15 },
+        { id: "astra", name: "네온 아스트라", price: 1800, color: "#ec4899", darkColor: "#9d174d", accent: "#67e8f9", stripe: "#fbcfe8", desc: "자석 + 코인 2배 + 점수 +50% + 실드 5초", steerSpeed: 0.40, coinMult: 2, scoreMult: 1.5, shieldMs: 5000, magnetRadius: 150, hitboxMargin: 9, slowChance: 0.25 }
+      ];
+
+      const STORAGE_KEY = "turboRacingSaveV52";
+      const defaultRanks = [
+        { name: "스피드왕", score: 1500 },
+        { name: "드리프터", score: 1000 },
+        { name: "초보운전", score: 500 }
+      ];
+
+      let saveData = {
+        coins: 0,
+        ownedCars: ["basic"],
+        equippedCar: "basic",
+        ranks: [...defaultRanks],
+        lastName: ""
+      };
+
+      function loadSave() {
+        try {
+          const raw = window.localStorage && window.localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed && typeof parsed === "object") {
+              saveData = {
+                coins: typeof parsed.coins === "number" ? parsed.coins : 0,
+                ownedCars: Array.isArray(parsed.ownedCars) && parsed.ownedCars.length ? parsed.ownedCars : ["basic"],
+                equippedCar: typeof parsed.equippedCar === "string" ? parsed.equippedCar : "basic",
+                ranks: Array.isArray(parsed.ranks) && parsed.ranks.length ? parsed.ranks : [...defaultRanks],
+                lastName: typeof parsed.lastName === "string" ? parsed.lastName : ""
+              };
+            }
+          }
+        } catch (e) {}
+        updateCoinUI();
+      }
+
+      function persistSave() {
+        try {
+          if (window.localStorage) {
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(saveData));
+          }
+        } catch (e) {}
+        updateCoinUI();
+      }
+
+      function getEquippedCar() {
+        return CARS.find(c => c.id === saveData.equippedCar) || CARS[0];
+      }
+
+      function updateCoinUI() {
+        if (walletCoinsEl) walletCoinsEl.textContent = saveData.coins;
+        if (garageCoinText) garageCoinText.textContent = `${saveData.coins.toLocaleString()}원`;
+        const car = getEquippedCar();
+        if (equippedBadge) equippedBadge.textContent = `장착 중: ${car.name} (${car.desc})`;
+      }
+
+      function drawRoundedRect(targetCtx, x, y, w, h, r) {
+        const radius = Math.min(r, w / 2, h / 2);
+        targetCtx.beginPath();
+        targetCtx.moveTo(x + radius, y);
+        targetCtx.arcTo(x + w, y, x + w, y + h, radius);
+        targetCtx.arcTo(x + w, y + h, x, y + h, radius);
+        targetCtx.arcTo(x, y + h, x, y, radius);
+        targetCtx.arcTo(x, y, x + w, y, radius);
+        targetCtx.closePath();
+      }
+
+      function drawCarOnContext(targetCtx, x, y, w, h, color, isPlayer = false, shieldRemainMs = 0, carSpec = null) {
+        if (!targetCtx) return;
+
+        // 1. 지면 그림자
+        targetCtx.save();
+        targetCtx.fillStyle = "rgba(0, 0, 0, 0.36)";
+        drawRoundedRect(targetCtx, x - w * 0.05, y + h * 0.04, w * 1.1, h * 0.98, w * 0.25);
+        targetCtx.fill();
+        targetCtx.restore();
+
+        // 2. 타이어 4개 (휠 림 디테일 포함)
+        const wheelW = Math.max(4, w * 0.12);
+        const wheelH = Math.max(11, h * 0.175);
+        const wheelPositions = [
+          [x - wheelW * 0.65, y + h * 0.13],
+          [x + w - wheelW * 0.35, y + h * 0.13],
+          [x - wheelW * 0.65, y + h * 0.69],
+          [x + w - wheelW * 0.35, y + h * 0.69]
+        ];
+        wheelPositions.forEach(([wx, wy]) => {
+          targetCtx.fillStyle = "#090d16";
+          drawRoundedRect(targetCtx, wx, wy, wheelW, wheelH, 2);
+          targetCtx.fill();
+          targetCtx.fillStyle = "rgba(148, 163, 184, 0.35)";
+          targetCtx.fillRect(wx + wheelW * 0.25, wy + wheelH * 0.25, wheelW * 0.5, wheelH * 0.5);
+        });
+
+        // 3. 실드 이펙트
+        if (isPlayer && shieldRemainMs > 0) {
+          const blinkOff = shieldRemainMs < 1000 && Math.floor(shieldRemainMs / 110) % 2 === 0;
+          if (!blinkOff) {
+            targetCtx.save();
+            const rad = Math.max(w, h) * 0.68;
+            const sg = targetCtx.createRadialGradient(x + w / 2, y + h / 2, rad * 0.4, x + w / 2, y + h / 2, rad);
+            sg.addColorStop(0, "rgba(56, 189, 248, 0.04)");
+            sg.addColorStop(1, "rgba(56, 189, 248, 0.28)");
+            targetCtx.strokeStyle = "#38bdf8";
+            targetCtx.fillStyle = sg;
+            targetCtx.lineWidth = 2.5;
+            targetCtx.beginPath();
+            targetCtx.arc(x + w / 2, y + h / 2, rad, 0, Math.PI * 2);
+            targetCtx.fill();
+            targetCtx.stroke();
+            targetCtx.restore();
+          }
+        }
+
+        // 4. 코인 자석 범위 링
+        if (isPlayer && carSpec && carSpec.magnetRadius > 0) {
+          targetCtx.save();
+          targetCtx.strokeStyle = "rgba(250, 204, 21, 0.2)";
+          targetCtx.setLineDash([5, 5]);
+          targetCtx.lineWidth = 1.5;
+          targetCtx.beginPath();
+          targetCtx.arc(x + w / 2, y + h / 2, carSpec.magnetRadius, 0, Math.PI * 2);
+          targetCtx.stroke();
+          targetCtx.setLineDash([]);
+          targetCtx.restore();
+        }
+
+        // 5. 사이드미러
+        targetCtx.fillStyle = carSpec && carSpec.darkColor ? carSpec.darkColor : color;
+        targetCtx.fillRect(x - w * 0.07, y + h * 0.31, w * 0.08, h * 0.07);
+        targetCtx.fillRect(x + w * 0.99, y + h * 0.31, w * 0.08, h * 0.07);
+
+        // 6. 입체 차체 그라데이션
+        const bodyGrad = targetCtx.createLinearGradient(x, y, x + w, y);
+        const darkSide = carSpec && carSpec.darkColor ? carSpec.darkColor : "rgba(0,0,0,0.25)";
+        bodyGrad.addColorStop(0, darkSide);
+        bodyGrad.addColorStop(0.28, color);
+        bodyGrad.addColorStop(0.72, color);
+        bodyGrad.addColorStop(1, darkSide);
+
+        targetCtx.fillStyle = bodyGrad;
+        drawRoundedRect(targetCtx, x, y, w, h, w * 0.24);
+        targetCtx.fill();
+
+        // 네온 아스트라 외곽 글로우
+        if (isPlayer && carSpec && carSpec.id === "astra") {
+          targetCtx.save();
+          targetCtx.shadowColor = "#67e8f9";
+          targetCtx.shadowBlur = 10;
+          targetCtx.strokeStyle = "#67e8f9";
+          targetCtx.lineWidth = 2;
+          drawRoundedRect(targetCtx, x + 0.5, y + 0.5, w - 1, h - 1, w * 0.24);
+          targetCtx.stroke();
+          targetCtx.restore();
+        } else {
+          targetCtx.strokeStyle = "rgba(255, 255, 255, 0.32)";
+          targetCtx.lineWidth = 1.5;
+          drawRoundedRect(targetCtx, x + 0.5, y + 0.5, w - 1, h - 1, w * 0.24);
+          targetCtx.stroke();
+        }
+
+        // 7. 차종별 커스텀 디테일
+        if (isPlayer && carSpec) {
+          if (carSpec.id === "mforce") {
+            // M 시그니처 3색 스트라이프
+            const sw = w * 0.06;
+            const sx = x + w * 0.5 - sw * 1.5;
+            targetCtx.fillStyle = "#38bdf8";
+            targetCtx.fillRect(sx, y + h * 0.05, sw, h * 0.9);
+            targetCtx.fillStyle = "#6366f1";
+            targetCtx.fillRect(sx + sw, y + h * 0.05, sw, h * 0.9);
+            targetCtx.fillStyle = "#ef4444";
+            targetCtx.fillRect(sx + sw * 2, y + h * 0.05, sw, h * 0.9);
+          } else if (carSpec.id === "super" || carSpec.id === "astra") {
+            // 트윈 레이싱 스트라이프
+            targetCtx.fillStyle = carSpec.accent;
+            targetCtx.globalAlpha = 0.72;
+            targetCtx.fillRect(x + w * 0.34, y + h * 0.05, w * 0.07, h * 0.9);
+            targetCtx.fillRect(x + w * 0.59, y + h * 0.05, w * 0.07, h * 0.9);
+            targetCtx.globalAlpha = 1;
+          } else if (carSpec.id === "drift" || carSpec.id === "chrono" || carSpec.id === "basic") {
+            // 센터 라인
+            targetCtx.fillStyle = carSpec.stripe;
+            targetCtx.globalAlpha = 0.45;
+            targetCtx.fillRect(x + w * 0.46, y + h * 0.06, w * 0.08, h * 0.88);
+            targetCtx.globalAlpha = 1;
+          }
+        }
+
+        // 8. 앞유리, 루프, 뒷유리
+        targetCtx.fillStyle = "#0b1120";
+        if (isPlayer) {
+          drawRoundedRect(targetCtx, x + w * 0.14, y + h * 0.19, w * 0.72, h * 0.18, 4);
+          targetCtx.fill();
+
+          // 루프 패널
+          targetCtx.fillStyle = carSpec ? carSpec.color : color;
+          drawRoundedRect(targetCtx, x + w * 0.17, y + h * 0.38, w * 0.66, h * 0.25, 4);
+          targetCtx.fill();
+          targetCtx.strokeStyle = "rgba(255,255,255,0.22)";
+          targetCtx.lineWidth = 1;
+          drawRoundedRect(targetCtx, x + w * 0.17, y + h * 0.38, w * 0.66, h * 0.25, 4);
+          targetCtx.stroke();
+
+          // 뒷유리
+          targetCtx.fillStyle = "#0b1120";
+          drawRoundedRect(targetCtx, x + w * 0.18, y + h * 0.65, w * 0.64, h * 0.14, 4);
+          targetCtx.fill();
+
+          // 유리 반사광
+          targetCtx.fillStyle = "rgba(255, 255, 255, 0.25)";
+          targetCtx.fillRect(x + w * 0.19, y + h * 0.21, w * 0.12, h * 0.13);
+        } else {
+          drawRoundedRect(targetCtx, x + w * 0.14, y + h * 0.61, w * 0.72, h * 0.18, 4);
+          targetCtx.fill();
+          targetCtx.fillStyle = carSpec && carSpec.darkColor ? carSpec.darkColor : "rgba(0,0,0,0.2)";
+          drawRoundedRect(targetCtx, x + w * 0.17, y + h * 0.35, w * 0.66, h * 0.24, 4);
+          targetCtx.fill();
+          targetCtx.fillStyle = "#0b1120";
+          drawRoundedRect(targetCtx, x + w * 0.18, y + h * 0.18, w * 0.64, h * 0.14, 4);
+          targetCtx.fill();
+        }
+
+        // 9. 전용 루프 액세서리 (택시 사인 / 경찰 경광등 / 스포일러)
+        if (isPlayer && carSpec) {
+          if (carSpec.id === "taxi") {
+            targetCtx.fillStyle = "#f8fafc";
+            drawRoundedRect(targetCtx, x + w * 0.28, y + h * 0.45, w * 0.44, h * 0.11, 2.5);
+            targetCtx.fill();
+            targetCtx.fillStyle = "#0f172a";
+            targetCtx.font = `bold ${Math.max(7, Math.round(h * 0.065))}px sans-serif`;
+            targetCtx.textAlign = "center";
+            targetCtx.textBaseline = "middle";
+            targetCtx.fillText("TAXI", x + w * 0.5, y + h * 0.51);
+          } else if (carSpec.id === "police") {
+            const flashRed = Math.floor(Date.now() / 140) % 2 === 0;
+            targetCtx.fillStyle = "#0f172a";
+            targetCtx.fillRect(x + w * 0.22, y + h * 0.46, w * 0.56, h * 0.09);
+            targetCtx.fillStyle = flashRed ? "#ef4444" : "#7f1d1d";
+            targetCtx.fillRect(x + w * 0.24, y + h * 0.475, w * 0.25, h * 0.06);
+            targetCtx.fillStyle = !flashRed ? "#38bdf8" : "#0c4a6e";
+            targetCtx.fillRect(x + w * 0.51, y + h * 0.475, w * 0.25, h * 0.06);
+          } else if (carSpec.id === "drift" || carSpec.id === "super") {
+            // 리어 윙 스포일러
+            targetCtx.fillStyle = "#090d16";
+            drawRoundedRect(targetCtx, x + w * 0.06, y + h * 0.85, w * 0.88, h * 0.08, 2);
+            targetCtx.fill();
+            targetCtx.fillStyle = carSpec.accent;
+            targetCtx.fillRect(x + w * 0.1, y + h * 0.865, w * 0.8, h * 0.025);
+          } else if (carSpec.id === "chrono") {
+            // 시간 코어 링
+            targetCtx.strokeStyle = "#a7f3d0";
+            targetCtx.lineWidth = 1.6;
+            targetCtx.beginPath();
+            targetCtx.arc(x + w / 2, y + h * 0.5, w * 0.14, 0, Math.PI * 2);
+            targetCtx.stroke();
+          }
+        }
+
+        // 10. 헤드라이트 / 브레이크등
+        targetCtx.fillStyle = isPlayer ? (carSpec ? carSpec.accent : "#fef08a") : "#f87171";
+        const lightY = isPlayer ? y + h * 0.03 : y + h - h * 0.075;
+        drawRoundedRect(targetCtx, x + w * 0.11, lightY, w * 0.21, h * 0.048, 2);
+        targetCtx.fill();
+        drawRoundedRect(targetCtx, x + w * 0.68, lightY, w * 0.21, h * 0.048, 2);
+        targetCtx.fill();
+      }
+
+      function renderGaragePreviews() {
+        const canvases = garageListEl ? garageListEl.querySelectorAll("canvas.car-preview-canvas") : [];
+        canvases.forEach(c => {
+          const id = c.getAttribute("data-car-id");
+          const car = CARS.find(item => item.id === id);
+          const pctx = c.getContext("2d");
+          if (!car || !pctx) return;
+          pctx.clearRect(0, 0, c.width, c.height);
+          pctx.fillStyle = "#111827";
+          pctx.fillRect(0, 0, c.width, c.height);
+          pctx.fillStyle = "rgba(148,163,184,0.18)";
+          pctx.fillRect(c.width / 2 - 1, 0, 2, c.height);
+          drawCarOnContext(pctx, 13, 8, 22, 48, car.color, true, 0, car);
+        });
+      }
+
+      function renderGarage() {
+        if (!garageListEl) return;
+        updateCoinUI();
+        garageListEl.innerHTML = CARS.map(car => {
+          const owned = saveData.ownedCars.includes(car.id);
+          const equipped = saveData.equippedCar === car.id;
+          let btnHtml = "";
+          if (equipped) {
+            btnHtml = `<button class="car-action-btn btn-equipped" type="button" disabled>장착됨</button>`;
+          } else if (owned) {
+            btnHtml = `<button class="car-action-btn btn-equip" type="button" data-action="equip" data-id="${car.id}">장착하기</button>`;
+          } else {
+            const canBuy = saveData.coins >= car.price;
+            btnHtml = `<button class="car-action-btn btn-buy" type="button" data-action="buy" data-id="${car.id}" ${canBuy ? "" : "disabled"}>🪙 ${car.price.toLocaleString()}원</button>`;
+          }
+          return `
+            <div class="car-card ${equipped ? "equipped" : ""}">
+              <canvas class="car-preview-canvas" width="48" height="64" data-car-id="${car.id}"></canvas>
+              <div class="car-info">
+                <h3>${car.name}</h3>
+                <p>${car.desc}</p>
+              </div>
+              ${btnHtml}
+            </div>
+          `;
+        }).join("");
+        renderGaragePreviews();
+      }
+
+      if (garageListEl) {
+        garageListEl.addEventListener("click", function (e) {
+          const btn = e.target.closest("button[data-action]");
+          if (!btn) return;
+          const action = btn.getAttribute("data-action");
+          const id = btn.getAttribute("data-id");
+          const car = CARS.find(c => c.id === id);
+          if (!car) return;
+
+          if (action === "buy" && saveData.coins >= car.price && !saveData.ownedCars.includes(id)) {
+            saveData.coins -= car.price;
+            saveData.ownedCars.push(id);
+            saveData.equippedCar = id;
+            persistSave();
+            renderGarage();
+            drawIdlePreview();
+          } else if (action === "equip" && saveData.ownedCars.includes(id)) {
+            saveData.equippedCar = id;
+            persistSave();
+            renderGarage();
+            drawIdlePreview();
+          }
+        });
+      }
+
+      function renderRanks(highlightScore = null, highlightName = null) {
+        if (!rankListEl) return;
+        const ranks = [...saveData.ranks].sort((a, b) => b.score - a.score).slice(0, 5);
+        const medals = ["🥇", "🥈", "🥉", "4위", "5위"];
+        rankListEl.innerHTML = ranks.map((r, idx) => {
+          const isMe = highlightScore !== null && r.score === highlightScore && r.name === highlightName;
+          const safeName = String(r.name).replace(/[<>&"']/g, "");
+          return `<li class="rank-item ${isMe ? "highlight" : ""}"><span>${medals[idx]} ${safeName}</span><span>${r.score}점</span></li>`;
+        }).join("");
+      }
+
+      let isRunning = false;
+      let animId = null;
+      let lastFrameTime = 0;
+      let rawScore = 0;
+      let displayScore = 0;
+      let runCoins = 0;
+      let level = 1;
+      let baseSpeed = 5;
+      let roadOffset = 0;
+      let enemies = [];
+      let items = [];
+      let popups = [];
+      let sparks = [];
+      let shakeMs = 0;
+      let spawnTimer = 0;
+      let itemTimer = 0;
+      let shieldUntil = 0;
+      let activeShieldDuration = 3500;
+      let slowUntil = 0;
+      const SLOW_DURATION = 2200;
+      let rankSavedForRun = false;
+
+      const player = { width: 46, height: 80, x: 177, y: 440, targetX: 177 };
+      const enemyColors = ["#ef4444", "#a855f7", "#10b981", "#ec4899", "#f97316"];
+
+      function addPopup(x, y, text, color) {
+        popups.push({ x, y, text, color, life: 1.0 });
+      }
+
+      function addSparks(x, y, color) {
+        for (let i = 0; i < 10; i++) {
+          const angle = (Math.PI * 2 * i) / 10 + Math.random() * 0.3;
+          const speed = 2.2 + Math.random() * 3.2;
+          sparks.push({
+            x,
+            y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            color,
+            life: 1.0
+          });
+        }
+      }
+
+      function drawSparks() {
+        if (!ctx) return;
+        for (let i = 0; i < sparks.length; i++) {
+          const s = sparks[i];
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, s.life);
+          ctx.fillStyle = s.color;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, 3.2, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+      }
+
+      function drawPopups() {
+        if (!ctx) return;
+        for (let i = 0; i < popups.length; i++) {
+          const p = popups[i];
+          ctx.save();
+          ctx.globalAlpha = Math.max(0, p.life);
+          ctx.font = "bold 14px sans-serif";
+          ctx.textAlign = "center";
+          ctx.fillStyle = "#0f172a";
+          ctx.fillText(p.text, p.x + 1, p.y + 1);
+          ctx.fillStyle = p.color;
+          ctx.fillText(p.text, p.x, p.y);
+          ctx.restore();
+        }
+      }
+
+      function drawRoad(isSlowed, speedRatio) {
+        if (!ctx || !canvas) return;
+        ctx.fillStyle = isSlowed ? "#12262b" : "#1c2331";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = "rgba(148, 163, 184, 0.32)";
+        ctx.fillRect(14, 0, 2, canvas.height);
+        ctx.fillRect(canvas.width - 16, 0, 2, canvas.height);
+
+        ctx.fillStyle = isSlowed ? "rgba(52, 211, 153, 0.72)" : "rgba(226, 232, 240, 0.65)";
+        [138, 262].forEach(laneX => {
+          for (let y = -60 + (roadOffset % 60); y < canvas.height; y += 60) {
+            ctx.fillRect(laneX - 2, y, 4, 28);
+          }
+        });
+
+        if (speedRatio > 0.25 || isSlowed) {
+          const lineAlpha = isSlowed ? 0.16 : Math.min(0.24, speedRatio * 0.22);
+          ctx.strokeStyle = isSlowed
+            ? `rgba(52, 211, 153, ${lineAlpha})`
+            : `rgba(148, 163, 184, ${lineAlpha})`;
+          ctx.lineWidth = 1.5;
+          [5, 9, canvas.width - 9, canvas.width - 5].forEach((lx, idx) => {
+            const offsetY = (roadOffset * 1.6 + idx * 95) % canvas.height;
+            ctx.beginPath();
+            ctx.moveTo(lx, offsetY);
+            ctx.lineTo(lx, (offsetY + 42) % canvas.height);
+            ctx.stroke();
+          });
+        }
+      }
+
+      function drawItem(item) {
+        if (!ctx) return;
+        const cx = item.x + item.size / 2;
+        const cy = item.y + item.size / 2;
+        const r = item.size / 2;
+
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+
+        if (item.type === "coin") {
+          ctx.fillStyle = "#facc15";
+          ctx.fill();
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = "#ca8a04";
+          ctx.stroke();
+          ctx.fillStyle = "#713f12";
+          ctx.font = "bold 13px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("5", cx, cy + 1);
+        } else if (item.type === "redCoin") {
+          ctx.fillStyle = "#ef4444";
+          ctx.fill();
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = "#fecaca";
+          ctx.stroke();
+          ctx.fillStyle = "#ffffff";
+          ctx.font = "bold 12px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("10", cx, cy + 1);
+        } else {
+          ctx.fillStyle = "#38bdf8";
+          ctx.fill();
+          ctx.lineWidth = 2.5;
+          ctx.strokeStyle = "#e0f2fe";
+          ctx.stroke();
+          ctx.fillStyle = "#0f172a";
+          ctx.font = "bold 14px sans-serif";
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText("S", cx, cy + 1);
+        }
+
+        ctx.fillStyle = "rgba(255,255,255,0.6)";
+        ctx.beginPath();
+        ctx.arc(cx - r * 0.35, cy - r * 0.35, 2.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      function spawnEnemy() {
+        const lanes = [45, 177, 309];
+        const laneX = lanes[Math.floor(Math.random() * lanes.length)];
+        const color = enemyColors[Math.floor(Math.random() * enemyColors.length)];
+        enemies.push({ x: laneX, y: -90, width: 46, height: 80, color, speedOffset: Math.random() * 1.4 });
+      }
+
+      function spawnItem() {
+        const lanes = [53, 185, 317];
+        const laneX = lanes[Math.floor(Math.random() * lanes.length)];
+        const roll = Math.random();
+        let type = "coin";
+        if (roll < 0.15) type = "shield";
+        else if (roll < 0.235) type = "redCoin";
+        items.push({ x: laneX, y: -40, size: 30, type });
+      }
+
+      function checkRectHit(ax, ay, aw, ah, bx, by, bw, bh, margin = 6) {
+        return (
+          ax + margin < bx + bw - margin &&
+          ax + aw - margin > bx + margin &&
+          ay + margin < by + bh - margin &&
+          ay + ah - margin > by + margin
+        );
+      }
+
+      function getShieldRemainMs() {
+        return Math.max(0, shieldUntil - Date.now());
+      }
+
+      function getSlowRemainMs() {
+        return Math.max(0, slowUntil - Date.now());
+      }
+
+      function updateStatusBars(shieldRemain, slowRemain) {
+        if (shieldBarWrap && shieldBar) {
+          if (shieldRemain > 0) {
+            shieldBarWrap.style.display = "block";
+            shieldBar.style.width = Math.max(0, (shieldRemain / activeShieldDuration) * 100) + "%";
+          } else {
+            shieldBarWrap.style.display = "none";
+          }
+        }
+        if (slowBarWrap && slowBar) {
+          if (slowRemain > 0) {
+            slowBarWrap.style.display = "block";
+            slowBar.style.width = Math.max(0, (slowRemain / SLOW_DURATION) * 100) + "%";
+          } else {
+            slowBarWrap.style.display = "none";
+          }
+        }
+      }
+
+      function gameOver() {
+        isRunning = false;
+        if (animId) cancelAnimationFrame(animId);
+        if (shieldBarWrap) shieldBarWrap.style.display = "none";
+        if (slowBarWrap) slowBarWrap.style.display = "none";
+        rankSavedForRun = false;
+
+        saveData.coins += runCoins;
+        persistSave();
+
+        if (titleText) titleText.textContent = "💥 게임 오버!";
+        if (descText) descText.innerHTML = `점수: <b>${displayScore}점</b> · 획득 코인: <b style="color:#facc15;">+${runCoins}원</b>`;
+
+        if (nameForm) {
+          if (displayScore > 0) {
+            nameForm.style.display = "flex";
+            if (saveRankBtn) {
+              saveRankBtn.disabled = false;
+              saveRankBtn.textContent = "등록";
+            }
+            if (playerNameInput) playerNameInput.value = saveData.lastName || "";
+          } else {
+            nameForm.style.display = "none";
+          }
+        }
+
+        renderRanks();
+        if (startBtn) startBtn.textContent = "다시 시작";
+        if (overlay) overlay.style.display = "flex";
+      }
+
+      if (saveRankBtn) {
+        saveRankBtn.onclick = function () {
+          if (rankSavedForRun) return;
+          const finalName = (playerNameInput && playerNameInput.value ? playerNameInput.value : "").trim() || "플레이어";
+          saveData.lastName = finalName;
+          saveData.ranks.push({ name: finalName, score: displayScore });
+          saveData.ranks.sort((a, b) => b.score - a.score);
+          saveData.ranks = saveData.ranks.slice(0, 10);
+          persistSave();
+
+          rankSavedForRun = true;
+          saveRankBtn.disabled = true;
+          saveRankBtn.textContent = "완료!";
+          renderRanks(displayScore, finalName);
+        };
+      }
+
+      function stepFrame(now) {
+        if (!isRunning) return;
+        const ts = typeof now === "number" ? now : Date.now();
+        if (!lastFrameTime) lastFrameTime = ts;
+        const rawDelta = ts - lastFrameTime;
+        const dt = Math.min(2.2, Math.max(0.25, rawDelta / 16.667));
+        lastFrameTime = ts;
+
+        const carSpec = getEquippedCar();
+        const shieldRemain = getShieldRemainMs();
+        const slowRemain = getSlowRemainMs();
+        const isSlowed = slowRemain > 0;
+        const moveFactor = isSlowed ? 0.62 : 1.0;
+        const currentSpeed = baseSpeed * moveFactor;
+        const speedRatio = Math.max(0, (baseSpeed - 5) / 11);
+
+        updateStatusBars(shieldRemain, slowRemain);
+
+        roadOffset = (roadOffset + currentSpeed * dt) % 60;
+        rawScore += 1 * carSpec.scoreMult * dt;
+        displayScore = Math.floor(rawScore);
+        if (scoreEl) scoreEl.textContent = displayScore;
+
+        level = 1 + Math.floor(displayScore / 250);
+        if (levelEl) levelEl.textContent = `Lv.${level}`;
+        baseSpeed = Math.min(16, 5 + (level - 1) * 0.92);
+
+        const lerpAlpha = 1 - Math.pow(1 - carSpec.steerSpeed, dt);
+        player.x += (player.targetX - player.x) * lerpAlpha;
+
+        spawnTimer += dt;
+        const spawnInterval = Math.max(20, Math.round((60 - (level - 1) * 4) / moveFactor));
+        if (spawnTimer >= spawnInterval) {
+          spawnEnemy();
+          spawnTimer = 0;
+        }
+
+        itemTimer += dt;
+        if (itemTimer >= 120) {
+          spawnItem();
+          itemTimer = 0;
+        }
+
+        if (ctx) {
+          ctx.save();
+          if (shakeMs > 0) {
+            shakeMs = Math.max(0, shakeMs - rawDelta);
+            const mag = Math.ceil((shakeMs / 160) * 4);
+            ctx.translate((Math.random() - 0.5) * mag * 2, (Math.random() - 0.5) * mag * 2);
+          }
+
+          drawRoad(isSlowed, speedRatio);
+
+          const pCenterX = player.x + player.width / 2;
+          const pCenterY = player.y + player.height / 2;
+
+          for (let i = items.length - 1; i >= 0; i--) {
+            const it = items[i];
+            it.y += currentSpeed * 0.85 * dt;
+
+            const isCoinType = it.type === "coin" || it.type === "redCoin";
+            if (isCoinType && carSpec.magnetRadius > 0) {
+              const iCenterX = it.x + it.size / 2;
+              const iCenterY = it.y + it.size / 2;
+              const dx = pCenterX - iCenterX;
+              const dy = pCenterY - iCenterY;
+              const dist = Math.hypot(dx, dy);
+              if (dist < carSpec.magnetRadius && dist > 1) {
+                it.x += (dx / dist) * 7.5 * dt;
+                it.y += (dy / dist) * 7.5 * dt;
+              }
+            }
+
+            drawItem(it);
+
+            if (checkRectHit(player.x, player.y, player.width, player.height, it.x, it.y, it.size, it.size, 2)) {
+              if (it.type === "coin") {
+                const gained = Math.round(5 * carSpec.coinMult);
+                runCoins += gained;
+                rawScore += 30 * carSpec.scoreMult;
+                if (walletCoinsEl) walletCoinsEl.textContent = saveData.coins + runCoins;
+                addPopup(it.x + it.size / 2, it.y, `+${gained}원`, "#facc15");
+              } else if (it.type === "redCoin") {
+                const gained = Math.round(10 * carSpec.coinMult);
+                runCoins += gained;
+                rawScore += 60 * carSpec.scoreMult;
+                if (walletCoinsEl) walletCoinsEl.textContent = saveData.coins + runCoins;
+                addPopup(it.x + it.size / 2, it.y, `+${gained}원!`, "#f87171");
+              } else {
+                activeShieldDuration = carSpec.shieldMs;
+                shieldUntil = Date.now() + activeShieldDuration;
+                addPopup(it.x + it.size / 2, it.y, "SHIELD!", "#38bdf8");
+              }
+
+              if (isCoinType && carSpec.slowChance > 0 && Math.random() < carSpec.slowChance) {
+                slowUntil = Date.now() + SLOW_DURATION;
+                addPopup(player.x + player.width / 2, player.y - 10, "SLOW!", "#34d399");
+              }
+
+              displayScore = Math.floor(rawScore);
+              if (scoreEl) scoreEl.textContent = displayScore;
+              items.splice(i, 1);
+              continue;
+            }
+            if (canvas && it.y > canvas.height + 50) items.splice(i, 1);
+          }
+
+          drawCarOnContext(ctx, player.x, player.y, player.width, player.height, carSpec.color, true, shieldRemain, carSpec);
+
+          for (let i = enemies.length - 1; i >= 0; i--) {
+            const e = enemies[i];
+            e.y += (baseSpeed + e.speedOffset) * moveFactor * dt;
+            drawCarOnContext(ctx, e.x, e.y, e.width, e.height, e.color, false);
+
+            if (checkRectHit(player.x, player.y, player.width, player.height, e.x, e.y, e.width, e.height, carSpec.hitboxMargin)) {
+              if (shieldRemain > 0) {
+                const smashCoin = Math.max(1, Math.round(1 * carSpec.coinMult));
+                runCoins += smashCoin;
+                if (walletCoinsEl) walletCoinsEl.textContent = saveData.coins + runCoins;
+                addSparks(e.x + e.width / 2, e.y + e.height / 2, "#38bdf8");
+                addPopup(e.x + e.width / 2, e.y + 20, `+${smashCoin}원`, "#7dd3fc");
+                shakeMs = 150;
+                enemies.splice(i, 1);
+                continue;
+              } else {
+                ctx.restore();
+                gameOver();
+                return;
+              }
+            }
+            if (canvas && e.y > canvas.height + 100) enemies.splice(i, 1);
+          }
+
+          for (let i = sparks.length - 1; i >= 0; i--) {
+            sparks[i].x += sparks[i].vx * dt;
+            sparks[i].y += sparks[i].vy * dt;
+            sparks[i].life -= 0.045 * dt;
+            if (sparks[i].life <= 0) sparks.splice(i, 1);
+          }
+          drawSparks();
+
+          for (let i = popups.length - 1; i >= 0; i--) {
+            popups[i].y -= 1.1 * dt;
+            popups[i].life -= 0.025 * dt;
+            if (popups[i].life <= 0) popups.splice(i, 1);
+          }
+          drawPopups();
+
+          ctx.restore();
+        }
+
+        animId = requestAnimationFrame(stepFrame);
+      }
+
+      function startGame() {
+        if (animId) cancelAnimationFrame(animId);
+        rawScore = 0;
+        displayScore = 0;
+        runCoins = 0;
+        level = 1;
+        baseSpeed = 5;
+        roadOffset = 0;
+        enemies = [];
+        items = [];
+        popups = [];
+        sparks = [];
+        shakeMs = 0;
+        spawnTimer = 0;
+        itemTimer = 0;
+        shieldUntil = 0;
+        slowUntil = 0;
+        lastFrameTime = 0;
+        player.x = 177;
+        player.targetX = 177;
+
+        if (scoreEl) scoreEl.textContent = "0";
+        if (levelEl) levelEl.textContent = "Lv.1";
+        if (walletCoinsEl) walletCoinsEl.textContent = saveData.coins;
+        if (nameForm) nameForm.style.display = "none";
+        if (shieldBarWrap) shieldBarWrap.style.display = "none";
+        if (slowBarWrap) slowBarWrap.style.display = "none";
+        if (garageOverlay) garageOverlay.style.display = "none";
+        if (overlay) overlay.style.display = "none";
+
+        isRunning = true;
+        stepFrame(Date.now());
+      }
+
+      function openGarage() {
+        renderGarage();
+        if (garageOverlay) garageOverlay.style.display = "flex";
+      }
+
+      function closeGarage() {
+        if (garageOverlay) garageOverlay.style.display = "none";
+      }
+
+      if (startBtn) startBtn.onclick = startGame;
+      if (openGarageBtn) openGarageBtn.onclick = openGarage;
+      if (closeGarageBtn) closeGarageBtn.onclick = closeGarage;
+
+      function handleInput(clientX) {
+        if (!isRunning || !canvas) return;
+        const rect = canvas.getBoundingClientRect();
+        if (!rect.width) return;
+        const relX = ((clientX - rect.left) / rect.width) * canvas.width;
+        player.targetX = Math.max(20, Math.min(canvas.width - player.width - 20, relX - player.width / 2));
+      }
+
+      if (canvas) {
+        canvas.addEventListener("touchstart", function (e) {
+          e.preventDefault();
+          if (e.touches && e.touches[0]) handleInput(e.touches[0].clientX);
+        }, { passive: false });
+
+        canvas.addEventListener("touchmove", function (e) {
+          e.preventDefault();
+          if (e.touches && e.touches[0]) handleInput(e.touches[0].clientX);
+        }, { passive: false });
+
+        canvas.addEventListener("mousedown", function (e) { handleInput(e.clientX); });
+        canvas.addEventListener("mousemove", function (e) {
+          if (e.buttons === 1) handleInput(e.clientX);
+        });
+      }
+
+      function drawIdlePreview() {
+        const carSpec = getEquippedCar();
+        drawRoad(false, 0);
+        drawCarOnContext(ctx, player.x, player.y, player.width, player.height, carSpec.color, true, 0, carSpec);
+      }
+
+      loadSave();
+      renderRanks();
+      drawIdlePreview();
+    })();
+  </script>
+</body>
+</html>
